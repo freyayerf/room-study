@@ -1,0 +1,25 @@
+{
+  "name": "room-study",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local-first precise 2D room measurements and furniture planner",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.cjs",
+    "test:e2e": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run format:check && npm test && npm run build",
+    "release:check": "npm run check && npm run test:e2e && node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "prettier": "3.9.10"
+  }
+}

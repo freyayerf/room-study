@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Room Study version 1 plan",
+  "type": "object",
+  "required": ["version", "unit", "known", "fixtures", "items"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "shape": {
+      "enum": ["rectangle", "l", "study"]
+    },
+    "unit": {
+      "enum": ["cm", "m", "ft"]
+    },
+    "known": {
+      "type": "object",
+      "properties": {
+        "W": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "H": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "L": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "NW": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "ND": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "NT": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "M": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "EW": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "R": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "ED": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        }
+      }
+    },
+    "fixtures": {
+      "type": "object"
+    },
+    "bathroom": {
+      "$ref": "#/$defs/piece"
+    },
+    "sink": {
+      "$ref": "#/$defs/piece"
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/piece"
+      }
+    }
+  },
+  "$defs": {
+    "piece": {
+      "type": "object",
+      "required": ["id", "name", "type", "x", "y", "bw", "bd", "w", "d", "rot"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "enum": ["bed", "table", "sofa", "wardrobe", "tv", "bathroom", "sink"]
+        },
+        "color": {
+          "type": "string"
+        },
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "bw": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "bd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000000
+        },
+        "w": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "d": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rot": {
+          "enum": [0, 90, 180, 270]
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

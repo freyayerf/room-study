@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "shape": "l",
+  "unit": "cm",
+  "known": {
+    "W": 600,
+    "H": 400,
+    "NW": 180,
+    "ND": 150,
+    "NT": 250
+  },
+  "fixtures": {
+    "windowEnabled": false
+  },
+  "bathroom": {
+    "id": "bathroom",
+    "name": "Bathroom",
+    "type": "bathroom",
+    "color": "#e0e5d9",
+    "x": 0.7333333333333333,
+    "y": 0,
+    "bw": 160,
+    "bd": 94,
+    "w": null,
+    "d": null,
+    "rot": 0,
+    "enabled": false,
+    "locked": false
+  },
+  "sink": {
+    "id": "sink",
+    "name": "Sink",
+    "type": "sink",
+    "color": "#d7e2d8",
+    "x": 0.9366666666666666,
+    "y": 0.61,
+    "bw": 38,
+    "bd": 100,
+    "w": null,
+    "d": null,
+    "rot": 0,
+    "enabled": false,
+    "locked": false
+  },
+  "items": [
+    {
+      "id": "bed",
+      "name": "Bed",
+      "type": "bed",
+      "color": "#d6ba8c",
+      "x": 0.08,
+      "y": 0.1,
+      "bw": 155,
+      "bd": 170,
+      "w": 140,
+      "d": 200,
+      "rot": 0,
+      "enabled": true,
+      "locked": false
+    },
+    {
+      "id": "stand",
+      "name": "Bedside stand",
+      "type": "table",
+      "color": "#aaac93",
+      "x": 0.4,
+      "y": 0.1,
+      "bw": 38,
+      "bd": 40,
+      "w": 40,
+      "d": 40,
+      "rot": 0,
+      "enabled": true,
+      "locked": false
+    },
+    {
+      "id": "sofa",
+      "name": "Sofa",
+      "type": "sofa",
+      "color": "#9da98c",
+      "x": 0.62,
+      "y": 0.1,
+      "bw": 126,
+      "bd": 52,
+      "w": 150,
+      "d": 70,
+      "rot": 0,
+      "enabled": true,
+      "locked": false
+    }
+  ]
+}

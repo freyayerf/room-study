@@ -1,0 +1,44 @@
+name: Release
+on:
+  push:
+    tags: ['v*.*.*']
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify version and main ancestry
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node -e 'const p=require("./package.json");const t=process.env.RELEASE_TAG;if(!/^v\d+\.\d+\.\d+$/.test(t)||t!=="v"+p.version)throw Error("Tag must match package version")'
+          git merge-base --is-ancestor HEAD origin/main
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run release:check
+      - name: Publish release and offline artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" release/*.zip release/*.html release/SHA256SUMS.txt --clobber
+          else
+            gh release create "$RELEASE_TAG" release/*.zip release/*.html release/SHA256SUMS.txt --verify-tag --title "Room Study $RELEASE_TAG" --generate-notes
+          fi

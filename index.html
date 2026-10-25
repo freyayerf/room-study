@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f6f5ef" />
+    <title>Room Study — Precise 2D room planner</title>
+    <meta
+      name="description"
+      content="Measure your bedroom, calculate missing dimensions, and try furniture layouts in a local-first floor planner."
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="#" aria-label="Room Study home"
+        ><span class="brand-icon">⌑</span>ROOM<span class="brand-light">STUDY</span></a
+      ><span class="project-title"
+        ><span id="layoutName">Starting layout</span> <span class="tag">PERSONAL SPACE</span></span
+      >
+      <div class="header-actions">
+        <span id="saveState" class="save-state">◉ Draft autosaved</span
+        ><button class="button saved-plans-button" id="savedPlansBtn">
+          Saved plans <span id="savedCount">0</span></button
+        ><button class="button save-plan-button" id="savePlanBtn">Save plan</button
+        ><button class="button" id="exportBtn">↗ Export</button>
+      </div>
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <div class="eyebrow">A LITTLE PLANNING. A BETTER ROOM.</div>
+          <h1>Your space, worked out.</h1>
+          <p>Start with what you know. Find room for what comes next.</p>
+        </div>
+        <div class="step-indicator">
+          <span class="active">01 <b>Measure</b></span
+          ><i></i><span>02 <b>Arrange</b></span>
+        </div>
+      </div>
+      <div class="workspace">
+        <aside class="measure-panel">
+          <div class="panel-title">
+            <h2>The measurements</h2>
+            <span class="small-icon">↔</span>
+          </div>
+          <p class="panel-sub">Enter what you know. Leave the rest blank.</p>
+          <div class="unit-row shape-row">
+            <label for="roomShape">Room shape</label
+            ><select id="roomShape">
+              <option value="rectangle">Rectangle</option>
+              <option value="l">L-shaped room</option>
+              <option value="study">Recess + entrance</option>
+            </select>
+          </div>
+          <div class="unit-row">
+            <label for="units">Working units</label
+            ><select id="units">
+              <option value="cm">Centimeters · cm</option>
+              <option value="m">Meters · m</option>
+              <option value="ft">Feet + inches</option>
+            </select>
+          </div>
+          <div class="tabs" role="tablist">
+            <button class="active" data-tab="room" role="tab" aria-selected="true">Room</button
+            ><button data-tab="furniture" role="tab" aria-selected="false">Furniture</button
+            ><button data-tab="fixtures" role="tab" aria-selected="false">Features</button>
+          </div>
+          <div id="measurementList" class="measurement-list"></div>
+          <div class="panel-foot">
+            <div class="progress-copy">
+              <b id="progressTitle">A blank canvas</b><span id="progressCount">0 / 10</span>
+            </div>
+            <div class="progress-track"><div id="progressBar"></div></div>
+            <p id="progressHint">One overall dimension is a good place to start.</p>
+          </div>
+        </aside>
+        <section class="drawing-panel">
+          <div class="canvas-toolbar">
+            <div class="view-tabs"><button class="active" id="planView">Floor plan</button></div>
+            <div class="canvas-tools">
+              <button id="undoBtn" class="icon-button" title="Undo" aria-label="Undo">↶</button
+              ><button id="redoBtn" class="icon-button" title="Redo" aria-label="Redo">↷</button
+              ><span class="toolbar-divider"></span
+              ><button id="zoomOut" class="icon-button" aria-label="Zoom out">−</button
+              ><button id="zoomLabel" class="zoom-label" title="Reset zoom">Fit</button
+              ><button id="zoomIn" class="icon-button" aria-label="Zoom in">+</button>
+            </div>
+          </div>
+          <div class="drawing-area" id="drawingArea">
+            <div class="plan-badges">
+              <span class="badge"><i></i> TOP VIEW</span
+              ><span class="badge muted" id="scaleBadge">Sketch proportions · unmeasured</span>
+            </div>
+            <div id="objectTools" class="object-tools" hidden>
+              <span id="objectName"></span><span id="objectAngle">0°</span
+              ><button
+                id="canvasRotateLeft"
+                title="Rotate left 90° · Shift + R"
+                aria-label="Rotate left 90°"
+              >
+                ↶</button
+              ><button
+                id="canvasRotateRight"
+                title="Rotate right 90° · R"
+                aria-label="Rotate right 90°"
+              >
+                ↷</button
+              ><button id="canvasLock">Lock</button>
+            </div>
+            <svg
+              id="plan"
+              role="group"
+              aria-label="Interactive room floor plan"
+              viewBox="-90 -65 780 500"
+            ></svg>
+            <div class="canvas-bottom">
+              <span id="canvasInstruction">Drag to move · Select + R to rotate</span
+              ><button class="button arrange-button" id="modeBtn">
+                ✥ <span>Move &amp; rotate</span>
+              </button>
+            </div>
+          </div>
+          <div class="canvas-status">
+            <div class="legend">
+              <span><i class="measured"></i>Measured</span
+              ><span><i class="calculated"></i>Calculated</span
+              ><span><i class="unknown"></i>Unknown</span>
+            </div>
+            <span id="scaleNote">No dimensions assumed</span>
+          </div>
+        </section>
+        <aside class="insight-panel">
+          <div class="eyebrow">YOUR ROOM, AT A GLANCE</div>
+          <div class="area-stat"><span id="areaValue">—</span><span id="areaUnit">m²</span></div>
+          <p class="area-label">Total floor area</p>
+          <div class="insight-note" id="areaHint">
+            Add wall measurements to calculate your floor area.
+          </div>
+          <div class="rule"></div>
+          <div id="selectionPanel"></div>
+          <div class="rule"></div>
+          <div class="next-step">
+            <span class="spark">✧</span>
+            <h3 id="nextTitle">Start with the long wall</h3>
+            <p id="nextHint">
+              Measure wall A across the top of your sketch. We’ll work out the missing lengths
+              wherever possible.
+            </p>
+            <button class="text-button" id="nextBtn">Enter a measurement <span>→</span></button>
+          </div>
+          <div id="warnings" aria-live="polite"></div>
+          <div class="privacy-note">
+            ⌂ &nbsp; A space of your own.<br /><span
+              >Your draft autosaves. Use Save plan to keep named layouts. Export a backup for
+              another browser.</span
+            >
+          </div>
+        </aside>
+      </div>
+      <footer>
+        <span>Room Study · Open source · Your plans stay in this browser.</span
+        ><button id="helpBtn">Help / 使用说明</button><button id="importBtn">Import a plan</button
+        ><button id="resetBtn">Start over</button>
+      </footer>
+    </main>
+    <dialog id="exportDialog">
+      <form method="dialog"><button class="close" aria-label="Close">×</button></form>
+      <div class="eyebrow">TAKE YOUR PLAN WITH YOU</div>
+      <h2>Keep a little backup.</h2>
+      <p>
+        A plan file saves every measurement and furniture position. Import it here whenever you need
+        it.
+      </p>
+      <button class="primary-button" id="downloadJson">Download plan · JSON ↓</button
+      ><button class="button full" id="downloadSvg">Download drawing · SVG ↓</button>
+      <p class="fine">Local browser storage is specific to this browser and device.</p>
+    </dialog>
+    <dialog id="addDialog">
+      <form id="addForm">
+        <button type="button" class="close" id="closeAdd" aria-label="Close">×</button>
+        <div class="eyebrow">SOMETHING NEW</div>
+        <h2>Add to your room.</h2>
+        <label
+          >Name<input
+            id="newName"
+            required
+            maxlength="40"
+            placeholder="e.g. Reading chair" /></label
+        ><label
+          >Furniture type<select id="newType">
+            <option value="table">Table / desk</option>
+            <option value="bed">Bed</option>
+            <option value="sofa">Sofa / chair</option>
+            <option value="wardrobe">Storage</option>
+          </select></label
+        >
+        <p class="fine">You can add exact dimensions after placing it.</p>
+        <button class="primary-button" type="submit">Add furniture +</button>
+      </form>
+    </dialog>
+    <dialog id="savePlanDialog">
+      <form id="savePlanForm">
+        <button type="button" class="close" id="closeSavePlan" aria-label="Close save dialog">
+          ×
+        </button>
+        <div class="eyebrow">A PLACE FOR EVERY POSSIBILITY</div>
+        <h2 id="savePlanTitle">Keep this layout.</h2>
+        <p id="savePlanDescription">Save a separate copy of your measurements and arrangement.</p>
+        <label for="savePlanName">Layout name</label
+        ><input
+          id="savePlanName"
+          required
+          maxlength="80"
+          placeholder="e.g. Original layout or Bed by the window"
+          autocomplete="off"
+        /><button class="primary-button" type="submit" id="confirmSavePlan">
+          Save this floorplan
+        </button>
+        <p class="fine">
+          Saved in this browser. Use Saved plans → Export all layouts for a backup.
+        </p>
+      </form>
+    </dialog>
+    <dialog id="layoutsDialog">
+      <button type="button" class="close" id="closeLayouts" aria-label="Close saved plans">
+        ×
+      </button>
+      <div class="eyebrow">ROOM FOR ANOTHER IDEA</div>
+      <div class="library-heading">
+        <h2>Your saved plans.</h2>
+        <span id="libraryCount"></span>
+      </div>
+      <p>
+        Open any layout to return to it. If your current draft has changes, we’ll save a copy before
+        switching.
+      </p>
+      <div id="savedLayoutsList" class="saved-layouts-list"></div>
+      <div class="library-footer">
+        <p>
+          Saved on this browser and device. Export all layouts to keep a backup or use them
+          elsewhere.
+        </p>
+        <div>
+          <button class="button" id="importLibrary">Import layouts</button
+          ><button class="button" id="exportLibrary">Export all layouts ↓</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="helpDialog">
+      <form method="dialog"><button class="close" aria-label="Close help">×</button></form>
+      <h2>Room Study · 使用说明</h2>
+      <p>
+        1. Choose a room shape and units. Enter measured wall lengths; leave unknown values blank.
+        Calculated dimensions are marked.<br />选择房型和单位，填写实测尺寸；未知值留空，推算值会标为
+        CALCULATED。
+      </p>
+      <p>
+        2. Select furniture to set width, depth and position. Drag to move; R / Shift+R rotates.
+        Arrow keys move 1 cm, Shift+arrows 10 cm. Lock prevents moving.<br />选择家具输入宽、深和位置。拖动摆放，R
+        旋转，方向键微调，Lock 锁定。
+      </p>
+      <p>
+        3. Save plan keeps a named copy in this browser. Export JSON backs up editable data; SVG
+        exports the whole drawing.<br />Save plan 在本浏览器保存方案；JSON 可备份并重新编辑，SVG
+        导出完整图纸。
+      </p>
+      <p>
+        4. Features can enable an optional bathroom or sink. Start over resets the draft; Undo can
+        restore it.<br />Features 中可启用浴室、水槽；Start over 重置草稿，可用 Undo 撤销。
+      </p>
+      <p class="fine">
+        All dimensions are stored in centimeters. Preview proportions are approximate until
+        measured. Three orthogonal templates are supported; arbitrary polygons, wall thickness and
+        building-code checks are outside this version. /
+        未测量尺寸仅供示意。本版支持三种正交房型，不含任意多边形、墙厚及建筑规范校核。Data stays on
+        this device. Export backups before clearing browser data.
+      </p>
+    </dialog>
+    <input type="file" id="importFile" accept="application/json,.json" hidden /><noscript
+      >Room Study needs JavaScript enabled. No account or server is required.</noscript
+    >
+    <div id="toast" role="status"></div>
+    <script src="./src/engine.js" defer></script>
+    <script src="./src/model.js" defer></script>
+    <script src="./src/layout-store.js" defer></script>
+    <script src="./src/app.js" defer></script>
+  </body>
+</html>
