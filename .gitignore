@@ -10,4 +10,3 @@ test-results/
 !.env.example
 *.pem
 *.key
-
